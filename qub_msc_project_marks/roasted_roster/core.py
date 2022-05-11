@@ -12,7 +12,7 @@ def load_id_number_list(roster_file_name, worksheet_name="MarkEntry"):
     Creates a list with the id numbers of the students.
 
     It opens the roster file, retrieves the id numbers of all students
-    and terurns them as a list.
+    and returns them as a list.
 
     :param roster_file_name: target file
     :param worksheet_name: worksheet where the data are.
@@ -33,6 +33,14 @@ def load_id_number_list(roster_file_name, worksheet_name="MarkEntry"):
 
 
 def find_in_list(string_list, key_word):
+    """
+    Gives an index number for the given element in the given list.
+
+    :param string_list: A list
+    :param key_word: element to be found
+    :return: the index number of the element
+    :raises ValueError: if the element is not found
+    """
     return string_list.index(key_word)
 
 
