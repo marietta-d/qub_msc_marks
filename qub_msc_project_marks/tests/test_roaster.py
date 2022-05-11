@@ -1,5 +1,5 @@
 import unittest
-import roasted_roster.core as roast
+import roasted_roster.project_marks as roast
 
 
 class MyTestCase(unittest.TestCase):
