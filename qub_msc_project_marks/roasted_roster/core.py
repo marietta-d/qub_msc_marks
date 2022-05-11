@@ -5,6 +5,10 @@ import openpyxl.comments
 # Global variables
 SUMMARY_SHEET_NAME = "Summary"
 TARGET_FILE_FIRST_REPORT_COL = 5
+TARGET_FILE_PROGRESS_COL = 6
+TARGET_FILE_EXECUTIVE_PRESENTATION_COL = 7
+TARGET_FILE_ORAL_COL = 8
+TARGET_FILE_FINAL_REPORT_COL = 9
 
 
 def load_id_number_list(roster_file_name, worksheet_name="MarkEntry"):
@@ -99,37 +103,46 @@ def fetch_marks_for_student(filename):
 
 def record_data_for_student(results, roster_file_name, list_of_students_ids):
     """
+    Writes the data into the target file.
 
-    :param results:
-    :param roster_file_name:
-    :param list_of_students_ids:
-    :return:
+    Finds the right position and fills in the data from a dictionary.
+    It also inserts a comment with the name and the individual mark of
+    the supervisor and the moderator
+
+    :param results: dictionary with data
+    :param roster_file_name: target file
+    :param list_of_students_ids: list of all students numbers in their order
+    of appearance in the target file
+    :return: the target file filled with the data
     """
     wb = xl.open(roster_file_name)
     ws = wb["MarkEntry"]
     loc = find_in_list(list_of_students_ids, results["student_number"])
     offset = 5
     ws.cell(row=loc+offset, column=TARGET_FILE_FIRST_REPORT_COL).value = results["first_report"]
-    ws.cell(row=loc + offset, column=6).value = results["progress"]
-    ws.cell(row=loc + offset, column=7).value = results["executive_presentation"]
-    ws.cell(row=loc + offset, column=8).value = results["oral"]
-    ws.cell(row=loc + offset, column=9).value = results["final_report"]
+    ws.cell(row=loc + offset, column=TARGET_FILE_PROGRESS_COL).value = results["progress"]
+    ws.cell(row=loc + offset, column=TARGET_FILE_EXECUTIVE_PRESENTATION_COL).value = results["executive_presentation"]
+    ws.cell(row=loc + offset, column=TARGET_FILE_ORAL_COL).value = results["oral"]
+    ws.cell(row=loc + offset, column=TARGET_FILE_FINAL_REPORT_COL).value = results["final_report"]
     supervisor_mark = round(4 * results["final_report_supervisor"])
     moderator_mark = round(4 * results["final_report_moderator"])
     supervisor = results["supervisor"]
     moderator = results["moderator"]
     supervisor_and_moderator_marks = xl.comments.Comment(f"supervisor ({supervisor}): {supervisor_mark}, "
                                                          f"moderator ({moderator}): {moderator_mark}", "python")
-    ws.cell(row=loc + offset, column=9).comment = supervisor_and_moderator_marks
+    ws.cell(row=loc + offset, column=TARGET_FILE_FINAL_REPORT_COL).comment = supervisor_and_moderator_marks
     wb.save(roster_file_name)
 
 
 def copy_markssheets_to_project_roster(marksheet_folder_name, roster_file_name):
     """
+    Inserts the data for every student.
 
-    :param marksheet_folder_name: lalala
-    :param roster_file_name:  lalalala
-    :return:
+    It opens every file in the folder where the project marksheets are,
+    finds the right position in the target file and copies them there
+
+    :param marksheet_folder_name: folder where the marksheets are
+    :param roster_file_name: target file
     """
     marksheets_list = os.listdir(marksheet_folder_name)
     student_numbers_in_roster = load_id_number_list(roster_file_name)
