@@ -4,14 +4,28 @@ import openpyxl.comments
 
 # Global variables
 SUMMARY_SHEET_NAME = "Summary"
+TARGET_MARKSHEET_NAME = "MarkEntry"
 TARGET_FILE_FIRST_REPORT_COL = 5
 TARGET_FILE_PROGRESS_COL = 6
 TARGET_FILE_EXECUTIVE_PRESENTATION_COL = 7
 TARGET_FILE_ORAL_COL = 8
 TARGET_FILE_FINAL_REPORT_COL = 9
 
+CELL_LOC_STUDENT_NUM = 'C7'
+CELL_LOC_STUDENT_NAME = 'C6'
+CELL_LOC_STUDENT_SUPERVISOR = "C10"
+CELL_LOC_STUDENT_MODERATOR = 'C11'
+CELL_LOC_STUDENT_PROGRESS = "H7"
+CELL_LOC_STUDENT_FIRST_REPORT = 'H6'
+CELL_LOC_STUDENT_EXEC = "H8"
+CELL_LOC_STUDENT_ORAL = "H9"
+CELL_LOC_STUDENT_FINAL_SUP = "E11"
+CELL_LOC_STUDENT_FINAL_MOD = "E10"
+CELL_LOC_STUDENT_FINAL = "H11"
+CELL_LOC_STUDENT_TOTAL = "H12"
 
-def load_id_number_list(roster_file_name, worksheet_name="MarkEntry"):
+
+def load_id_number_list(roster_file_name, worksheet_name=TARGET_MARKSHEET_NAME):
     """
     Creates a list with the id numbers of the students.
 
@@ -72,18 +86,18 @@ def fetch_marks_for_student(filename):
     """
     wb = xl.load_workbook(filename, data_only=True)
     ws = wb[SUMMARY_SHEET_NAME]
-    student_number = str(ws['C7'].value)
-    student_name = ws["C6"].value
-    student_supervisor = ws["C10"].value.strip()
-    student_moderator = ws["C11"].value.strip()
-    first_report_mark = ws["H6"].value
-    progress_mark = ws["H7"].value
-    executive_presentation_mark = ws["H8"].value
-    oral_mark = ws["H9"].value
-    final_report_moderator_mark = ws["E10"].value
-    final_report_supervisor_mark = ws["E11"].value
-    final_report = ws["H11"].value
-    total_mark = ws["H12"].value
+    student_number = str(ws[CELL_LOC_STUDENT_NUM].value)
+    student_name = ws[CELL_LOC_STUDENT_NAME].value
+    student_supervisor = ws[CELL_LOC_STUDENT_SUPERVISOR].value.strip()
+    student_moderator = ws[CELL_LOC_STUDENT_MODERATOR].value.strip()
+    first_report_mark = ws[CELL_LOC_STUDENT_FIRST_REPORT].value
+    progress_mark = ws[CELL_LOC_STUDENT_PROGRESS].value
+    executive_presentation_mark = ws[CELL_LOC_STUDENT_EXEC].value
+    oral_mark = ws[CELL_LOC_STUDENT_ORAL].value
+    final_report_moderator_mark = ws[CELL_LOC_STUDENT_FINAL_MOD].value
+    final_report_supervisor_mark = ws[CELL_LOC_STUDENT_FINAL_SUP].value
+    final_report = ws[CELL_LOC_STUDENT_FINAL].value
+    total_mark = ws[CELL_LOC_STUDENT_TOTAL].value
     student_results = {
         "student_number": student_number,
         "student_name": student_name,
@@ -116,7 +130,7 @@ def record_data_for_student(results, roster_file_name, list_of_students_ids):
     :return: the target file filled with the data
     """
     wb = xl.open(roster_file_name)
-    ws = wb["MarkEntry"]
+    ws = wb[TARGET_MARKSHEET_NAME]
     loc = find_in_list(list_of_students_ids, results["student_number"])
     offset = 5
     ws.cell(row=loc+offset, column=TARGET_FILE_FIRST_REPORT_COL).value = results["first_report"]
