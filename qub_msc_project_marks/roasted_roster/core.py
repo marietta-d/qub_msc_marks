@@ -2,13 +2,22 @@ import os
 import openpyxl as xl
 import openpyxl.comments
 
+# Global variables
+SUMMARY_SHEET_NAME = "Summary"
+TARGET_FILE_FIRST_REPORT_COL = 5
+
 
 def load_id_number_list(roster_file_name, worksheet_name="MarkEntry"):
     """
-    
-    :param roster_file_name: 
-    :param worksheet_name: 
-    :return: 
+    Creates a list with the id numbers of the students.
+
+    It opens the roster file, retrieves the id numbers of all students
+    and terurns them as a list.
+
+    :param roster_file_name: target file
+    :param worksheet_name: worksheet where the data are.
+    If not specified the default value is "MarkEntry"
+    :return: a list with all id numbers as strings
     """
     wb_january = xl.load_workbook(roster_file_name)
     id_number_list = []
@@ -29,7 +38,7 @@ def find_in_list(string_list, key_word):
 
 def fetch_marks_for_student(filename):
     wb = xl.load_workbook(filename, data_only=True)
-    ws = wb["Summary"]
+    ws = wb[SUMMARY_SHEET_NAME]
     student_number = str(ws['C7'].value)
     student_name = ws["C6"].value
     student_supervisor = ws["C10"].value.strip()
@@ -60,11 +69,18 @@ def fetch_marks_for_student(filename):
 
 
 def record_data_for_student(results, roster_file_name, list_of_students_ids):
+    """
+
+    :param results:
+    :param roster_file_name:
+    :param list_of_students_ids:
+    :return:
+    """
     wb = xl.open(roster_file_name)
     ws = wb["MarkEntry"]
     loc = find_in_list(list_of_students_ids, results["student_number"])
     offset = 5
-    ws.cell(row=loc+offset, column=5).value = results["first_report"]
+    ws.cell(row=loc+offset, column=TARGET_FILE_FIRST_REPORT_COL).value = results["first_report"]
     ws.cell(row=loc + offset, column=6).value = results["progress"]
     ws.cell(row=loc + offset, column=7).value = results["executive_presentation"]
     ws.cell(row=loc + offset, column=8).value = results["oral"]
@@ -80,6 +96,12 @@ def record_data_for_student(results, roster_file_name, list_of_students_ids):
 
 
 def copy_markssheets_to_project_roster(marksheet_folder_name, roster_file_name):
+    """
+
+    :param marksheet_folder_name: lalala
+    :param roster_file_name:  lalalala
+    :return:
+    """
     marksheets_list = os.listdir(marksheet_folder_name)
     student_numbers_in_roster = load_id_number_list(roster_file_name)
     for file in marksheets_list:
