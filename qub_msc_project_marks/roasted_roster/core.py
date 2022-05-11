@@ -45,6 +45,27 @@ def find_in_list(string_list, key_word):
 
 
 def fetch_marks_for_student(filename):
+    """
+    Creates a dictionary with all the marks and other info from a
+    student's project marksheet.
+
+    the dictionary contains the following keys:
+    - student_number
+    - student_name
+    - supervisor: supervisor name
+    - moderator: moderator name
+    - first_report
+    - progress
+    - executive_presentation
+    - oral
+    - final_report_moderator
+    - final_report_supervisor
+    - final_report
+    - total_mark
+
+    :param filename: project marksheet filename
+    :return: a dictionary
+    """
     wb = xl.load_workbook(filename, data_only=True)
     ws = wb[SUMMARY_SHEET_NAME]
     student_number = str(ws['C7'].value)
