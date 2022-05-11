@@ -24,6 +24,14 @@ class MyTestCase(unittest.TestCase):
         expected_loc = 2
         self.assertEqual(expected_loc, actual_loc)
 
+    def test_find_in_list_not_existing(self):
+        my_list = ["abc", "def", "ghi"]
+        keyword = "k"
+        with self.assertRaises(Exception) as _context:
+            roast.find_in_list(my_list, keyword)
+
+
+
     def test_fetch_marks_for_student(self):
         marksheet_filename = "../data/Mark Sheets Jan22/Dhivya.xlsx"
         marks = roast.fetch_marks_for_student(marksheet_filename)
