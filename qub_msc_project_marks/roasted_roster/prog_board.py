@@ -1,7 +1,7 @@
 import os
 import openpyxl as xl
-import openpyxl.comments
 import roasted_roster.utilities as util
+import datetime
 
 
 def load_subject_list(prog_board_file_name, worksheet_name="Main"):
@@ -33,6 +33,8 @@ def copy_from_marksheet_to_prog_board(marksheet_file_name,
     marksheet_ws = marksheet_wb["SubjectBoard"]
     module_code = marksheet_ws["C1"].value
     module_index = util.find_in_list(subjects, module_code)
+    date = datetime.datetime.now()
+    prog_board_ws.cell(row=3, column=2).value = f"Date: {date.strftime('%d %b %G')}"
     if module_index is None:
         raise Exception("wtf")
     i = 0
@@ -43,6 +45,16 @@ def copy_from_marksheet_to_prog_board(marksheet_file_name,
         name = marksheet_ws.cell(row=5+i, column=2).value
         mark = marksheet_ws.cell(row=5+i, column=3).value
         result = marksheet_ws.cell(row=5+i, column=4).value
+        if result == "PH [Pass with Honours Restriction]":
+            result = "PH"
+        if result == "P [Pass]":
+            result = "P"
+        if result == "F [Fail]":
+            result = "F"
+        if result == "ABSM [Absent Mitigation]":
+            result = "ABSM"
+        if result == "MNA [Mark Not Available]":
+            result = "MNA"
         i += 1
         if id is None:
             break
@@ -61,66 +73,26 @@ def copy_from_marksheet_to_prog_board(marksheet_file_name,
             prog_board_ws.cell(row=row, column=3).value = name
 
         prog_board_ws.cell(row=row, column=column).value = mark
+        prog_board_ws.cell(row=row, column=column+1).value = result
+        # ----- end of while loop
     prog_board_wb.save(prog_board_file_name)
-
-
-
-
-
-
     return student_id_list
 
 
+def fill_prog_board(prog_board_file_name,
+                    subject_folder_name):
+    subject_folder = os.listdir(subject_folder_name)
+    student_id_list = []
+    subjects = load_subject_list(prog_board_file_name)
+    for file in subject_folder:
+        file_path = os.path.join(subject_folder_name, file)
+        student_id_list = copy_from_marksheet_to_prog_board(
+            file_path,
+            prog_board_file_name,
+            student_id_list,
+            subjects)
 
 
 
-
-def fetch_grades_for_student(filename):
-    """
-    Creates a dictionary with all the students and other info from a
-    subjectboard marksheet.
-
-    the dictionary contains the following keys:
-    - student_name
-    - grade_input
-    - exam_board_note
-
-       :param filename : subject_board_file
-       :return: a dictionary
-    """
-    wb = xl.load_workbook(filename, data_only=True)
-    ws = wb["SubjectBoard"]
-    student_name = ws[cell(row=4, column=2)].value.strip()
-    grade_input = ws[cell(row=4, column=3)].value
-    exam_board_note = ws[cell(row=4, column=4)].value.strip()
-    student_results = {
-        "student_name": student_name,
-        "grade_input": grade_input,
-        "exam_board_note": exam_board_note,
-    }
-    return student_results
-
-
-def fetch_marks_for_subject(filename):
-    """
-    Creates a dictionary with all the students and other info from a
-    subjectboard marksheet.
-
-    the dictionary contains the following keys:
-    - subject
-    - student_id : is a dictionary
-
-    :param filename: project marksheet filename
-    :return: a dictionary
-    """
-    wb = xl.load_workbook(filename, data_only=True)
-    ws = wb["SubjectBoard"]
-    subject = ws[cell(row=1, column=3)].value
-    student_id = fetch_marks_for_subject(filename)
-    subject_results = {
-        "subject": subject,
-        "student_id": student_id,
-    }
-    return subject_results
 
 
